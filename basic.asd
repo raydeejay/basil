@@ -7,5 +7,6 @@
   :serial t
   :components ((:file "package")
                (:file "macros")
-               (:file "input-stream")
+               (:file "reader")
+               (:file "commands")
                (:file "basic")))
