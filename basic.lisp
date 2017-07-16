@@ -15,11 +15,15 @@
   (format t "0 OK~%"))
 
 (defun execute (tokens)
-  (let ((instr (find (car tokens) *commands*
-                     :test 'equal :key 'car)))
-    (if instr
-        (apply (cdr instr) (cdr tokens))
-        (error "Instruction ~A not found." (car tokens)))))
+  (let ((subinstructions (split-sequence '|:| tokens
+                                         :test 'equal
+                                         :remove-empty-subseqs t)))
+    (loop :for sub :in subinstructions
+       :for instr := (find (car sub) *commands*
+                           :test 'equal :key 'car)
+       :do (if instr
+               (apply (cdr instr) (cdr sub))
+               (error "Instruction ~A not found." (car sub))))))
 
 (defun evaluate (line)
   (let ((tokens (tokenize line)))
