@@ -23,12 +23,10 @@
 
 (defun evaluate (line)
   (let ((tokens (tokenize line)))
-    ;; (format t "TOKENS: ~A~%" tokens)
-    (cond ((numberp (car tokens))
-           ;; (format t "COMPILE: ~A~%" tokens)
-           (compile* tokens))
-          (t ;; (format t "EXECUTE: ~A~%" tokens)
-             (execute tokens)))))
+    (when tokens
+      (cond ((numberp (car tokens))
+             (compile* tokens))
+            (t (execute tokens))))))
 
 (defun repl ()
   (loop :for input := (read-line *standard-input* nil nil)
