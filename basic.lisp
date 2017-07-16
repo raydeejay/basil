@@ -9,7 +9,7 @@
 
 (defun compile* (tokens)
   (setf *program* (remove (car tokens) *program* :key 'car))
-  (when (> (length tokens) 2)
+  (when (> (length tokens) 1)
     (push tokens *program*)
     (setf *program* (sort *program* '< :key 'car)))
   (format t "0 OK~%"))
