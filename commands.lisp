@@ -6,9 +6,9 @@
 (defparameter *stop* nil)
 (defparameter *jump-to* nil)
 
-(defun find-line (n)
+(defun find-line (n &key jump-down)
   (position n *program*
-            :test 'equal
+            :test (if jump-down '<= '=)
             :key 'car))
 
 (defcommand 'rem remark (&rest args)
@@ -20,7 +20,7 @@
   (format t "Stopping~%"))
 
 (defcommand 'goto go-to (n)
-  (let ((target (find-line n)))
+  (let ((target (find-line n :jump-down t)))
     (if target
         (setf *jump-to* target)
         (error "GOTO to inexistent line ~D" n))))
@@ -41,7 +41,7 @@
 (defcommand 'run run-program (&optional start)
   (setf *stop* nil)
   (loop :for i := (if start
-                      (find-line start)
+                      (find-line start :jump-down t)
                       0)
      :then (if *jump-to*
                (let ((a (+ *jump-to*)))
