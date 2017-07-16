@@ -1,8 +1,8 @@
-;;;; basic.lisp
+;;;; basil.lisp
 
-(in-package #:basic)
+(in-package #:basil)
 
-;;; "basic" goes here. Hacks and glory await!
+;;; "basil" goes here. Hacks and glory await!
 
 (defparameter *program* nil)
 (defparameter *variables* (make-hash-table :test 'equal))

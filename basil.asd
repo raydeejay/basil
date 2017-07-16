@@ -1,6 +1,6 @@
-;;;; basic.asd
+;;;; basil.asd
 
-(asdf:defsystem #:basic
+(asdf:defsystem #:basil
   :description "A BASIC interpreter"
   :author "Sergi Reyner <sergi.reyner@gmail.com>"
   :license "MIT"
@@ -10,4 +10,4 @@
                (:file "macros")
                (:file "reader")
                (:file "commands")
-               (:file "basic")))
+               (:file "basil")))

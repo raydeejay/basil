@@ -1,9 +1,9 @@
 ;;; -*- Mode:Lisp; Syntax:ANSI-Common-Lisp; Coding:utf-8 -*-
 
-(in-package #:basic)
+(in-package #:basil)
 
-(defmacro defcommand (basic-name fn-name args &body body)
-  `(push (cons ,basic-name
+(defmacro defcommand (basil-name fn-name args &body body)
+  `(push (cons ,basil-name
                (defun ,fn-name ,args
                    ,@body))
          *commands*))

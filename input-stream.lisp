@@ -1,6 +1,6 @@
 ;;; -*- Mode:Lisp; Syntax:ANSI-Common-Lisp; Coding:utf-8 -*-
 
-(in-package #:basic)
+(in-package #:basil)
 
 ;; character input stream
 (defclass input-stream ()

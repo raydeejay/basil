@@ -1,4 +1,4 @@
 ;;;; package.lisp
 
-(defpackage #:basic
+(defpackage #:basil
   (:use #:cl #:split-sequence))

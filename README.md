@@ -1,4 +1,4 @@
-# A BASIC interpreter
+# BASIL - A BASIC interpreter
 
 ## Dialect specification:
 
