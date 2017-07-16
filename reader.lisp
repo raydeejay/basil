@@ -2,7 +2,7 @@
 
 (in-package #:basic)
 
-(defparameter *symbols* '(#\: #\, #\;))
+(defparameter *symbols* '(#\: #\, #\; #\=))
 
 (defun eat-spaces (stream)
   (loop :for next := (peek-char nil stream nil nil)
@@ -38,7 +38,6 @@
      :collect (read-char stream) :into token
      :finally (return (intern (coerce token 'string)))))
 
-;; called at the beginning of a line, once spaces have been eaten
 (defun read-token (stream)
   (loop :initially (eat-spaces stream)
      :for c := (peek-char nil stream nil nil)

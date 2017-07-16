@@ -3,16 +3,54 @@
 (in-package #:basic)
 
 (defparameter *commands* nil)
+(defparameter *stop* nil)
+(defparameter *jump-to* nil)
+
+(defun find-line (n)
+  (position n *program*
+            :test 'equal
+            :key 'car))
+
+(defcommand 'rem remark (&rest args)
+  (declare (ignore args)))
+
+(defcommand 'stop stop (&rest args)
+  (declare (ignore args))
+  (setf *stop* T)
+  (format t "Stopping~%"))
+
+(defcommand 'goto go-to (n)
+  (let ((target (find-line n)))
+    (if target
+        (setf *jump-to* target)
+        (error "GOTO to inexistent line ~D" n))))
 
 (defcommand 'list list-program ()
   (loop :for line :in *program*
-     :do (format t "~{~S ~}~%" line)
+     :do (loop :for token :in line :do
+            (cond ((equal token '|,|)
+                   (format t ","))
+                  ((equal token '|;|)
+                   (format t ";"))
+                  ((equal token '|:|)
+                   (format t " :"))
+                  (t (format t " ~S" token)))
+            :finally (format t "~%"))
      :finally (format t "~%0 OK~%")))
 
-(defcommand 'run run-program ()
-  (loop :for line :in *program*
-     :do ;; (format t "EXECUTING ~{~A ~}~%" line)
-     (execute (cdr line))
+(defcommand 'run run-program (&optional start)
+  (setf *stop* nil)
+  (loop :for i := (if start
+                      (find-line start)
+                      0)
+     :then (if *jump-to*
+               (let ((a (+ *jump-to*)))
+                 (setf *jump-to* nil)
+                 a)
+               (1+ i))
+     :while (and (< i (length *program*))
+                 (not *stop*))
+     :do (execute (cdr (elt *program* i)))
      :finally (format t "0 OK~%")))
 
 (defcommand 'clear clear ()
@@ -22,7 +60,11 @@
   (clear)
   (setf *program* nil))
 
-
+(defcommand 'let let= (&rest args)
+  (destructuring-bind (var equals-sign value) args
+    (if (equal equals-sign '|=|)
+        (setf (gethash var *variables*) value)
+        (error "Bad LET Syntax!~%"))))
 
 (defcommand 'print print-values (&rest tokens)
   (loop :with last := nil
