@@ -2,7 +2,8 @@
 
 (in-package #:basil)
 
-(defparameter *symbols* '(#\: #\, #\; #\=))
+(defparameter *symbols* '(#\: #\, #\; #\= #\+ #\- #\* #\/ #\% #\( #\) #\< #\>))
+(defparameter *operators* '(#\+ #\- #\* #\/ #\% #\( #\) #\< #\>))
 
 (defun eat-spaces (stream)
   (loop :for next := (peek-char nil stream nil nil)
@@ -37,6 +38,12 @@
      :while (and c (find c *symbols*))
      :collect (read-char stream) :into token
      :finally (return (intern (coerce token 'string)))))
+
+;; (defun read-operator (stream)
+;;   (loop :for c := (peek-char nil stream nil nil)
+;;      :while (and c (find c *operators*))
+;;      :collect (read-char stream) :into token
+;;      :finally (return (intern (coerce token 'string)))))
 
 (defun read-token (stream)
   (loop :initially (eat-spaces stream)
