@@ -72,26 +72,50 @@
         (setf (gethash var *variables*) (eval-math math-exp))
         (error "Bad LET Syntax!~%"))))
 
+(defun one-print-arg (tokens)
+  (car (split-sequence-if (lambda (c)
+                            (or (equal c '|,|)
+                                (equal c '|;|)))
+                          tokens
+                          :count 1)))
+
 (defcommand 'print print-values (&rest tokens)
-  (loop :with last := nil
-     :for tok :in tokens :do
+  (loop :with i := 0
+     :with last := nil
+     :while (< i (length tokens))
+     :for tok := (elt tokens i)
+     :do
      (when (and last
                 (not (equal last '|,|))
                 (not (equal last '|;|)))
        (format t " "))
      (cond ((numberp tok)
-            (format t "~D" tok))
+            (let ((expr (one-print-arg (subseq tokens i))))
+              (format t "~A" (eval-math expr))
+              (setf last tok)
+              (setf i (+ i (length expr)))))
            ((stringp tok)
-            (format t "~A" tok))
+            (format t "~A" tok)
+            (setf last tok)
+            (incf i))
            ((equal tok '|,|)
-            (format t "~A" #\Tab))
+            (format t "~A" #\Tab)
+            (setf last tok)
+            (incf i))
            ((equal tok '|;|)
             ;; do nothing
-            )
+            (setf last tok)
+            (incf i))
+           ((symbolp tok)
+            (let ((expr (one-print-arg (subseq tokens i))))
+              (format t "~A" (eval-math expr))
+              (setf last tok)
+              (setf i (+ i (length expr)))))
            ((gethash tok *variables*)
-            (format t "~A" (gethash tok *variables*)))
+            (format t "~A" (gethash tok *variables*))
+            (setf last tok)
+            (incf i))
            (t (error "Unknown variable ~A" tok)))
-     (setf last tok)
      :finally
      (when (and last
                 (not (equal last '|,|))
