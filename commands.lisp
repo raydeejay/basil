@@ -67,9 +67,9 @@
   (setf *program* nil))
 
 (defcommand 'let let= (&rest args)
-  (destructuring-bind (var equals-sign value) args
+  (destructuring-bind (var equals-sign . math-exp) args
     (if (equal equals-sign '|=|)
-        (setf (gethash var *variables*) value)
+        (setf (gethash var *variables*) (eval-math math-exp))
         (error "Bad LET Syntax!~%"))))
 
 (defcommand 'print print-values (&rest tokens)
