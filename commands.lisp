@@ -25,19 +25,6 @@
         (setf *jump-to* target)
         (error "GOTO to inexistent line ~D" n))))
 
-(defcommand 'list list-program ()
-  (loop :for line :in *program*
-     :do (loop :for token :in line :do
-            (cond ((equal token '|,|)
-                   (format t ","))
-                  ((equal token '|;|)
-                   (format t ";"))
-                  ((equal token '|:|)
-                   (format t " :"))
-                  (t (format t " ~S" token)))
-            :finally (format t "~%"))
-     :finally (format t "~%0 OK~%")))
-
 (defcommand 'run run-program (&optional start)
   (setf *stop* nil)
   (loop :for i := (if start
@@ -52,6 +39,25 @@
                  (not *stop*))
      :do (execute (cdr (elt *program* i)))
      :finally (format t "0 OK~%")))
+
+(defcommand 'list list-program ()
+  (loop :for line :in *program*
+     :do (loop :for token :in line :do
+            (cond ((equal token '|,|)
+                   (format t ","))
+                  ((equal token '|;|)
+                   (format t ";"))
+                  ((equal token '|:|)
+                   (format t " :"))
+                  ((equal token '|%|)
+                   (format t " %"))
+                  ((equal token '|(|)
+                   (format t " ("))
+                  ((equal token '|)|)
+                   (format t " )"))
+                  (t (format t " ~S" token)))
+            :finally (format t "~%"))
+     :finally (format t "~%0 OK~%")))
 
 (defcommand 'clear clear ()
   (setf *variables* (make-hash-table :test 'equal)))
