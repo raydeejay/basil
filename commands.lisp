@@ -3,13 +3,6 @@
 (in-package #:basil)
 
 (defparameter *commands* nil)
-(defparameter *stop* nil)
-(defparameter *jump-to* nil)
-
-(defun find-line (n &key jump-down)
-  (position n *program*
-            :test (if jump-down '<= '=)
-            :key 'car))
 
 (defcommand 'rem remark (&rest args)
   (declare (ignore args)))

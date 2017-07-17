@@ -9,5 +9,7 @@
   :components ((:file "package")
                (:file "macros")
                (:file "reader")
+               (:file "compiler")
+               (:file "interpreter")
                (:file "commands")
                (:file "basil")))
