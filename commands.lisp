@@ -151,3 +151,14 @@
   (format t "~A? " prompt)
   (setf (gethash var *variables*)
         (read-number-for-input *standard-input*)))
+
+(defcommand 'if if%% (&rest args)
+  (let ((parts (split-sequence 'then args :count 2)))
+    (let ((cond-exp (car parts))
+          (then (cadr parts)))
+      (if then
+          (let ((result (eval-math cond-exp)))
+            (if result
+                (execute then)
+                'jump))
+          (error "Bad IF Syntax!~%")))))
