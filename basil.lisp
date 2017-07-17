@@ -20,9 +20,11 @@
     (loop :for sub :in subinstructions
        :for instr := (find (car sub) *commands*
                            :test 'equal :key 'car)
-       :do (if instr
-               (apply (cdr instr) (cdr sub))
-               (error "Instruction ~A not found." (car sub))))))
+       :while (not (equal 'jump
+                          (if instr
+                              (apply (cdr instr) (cdr sub))
+                              (error "Instruction ~A not found."
+                                     (car sub))))))))
 
 (defun evaluate (line)
   (let ((tokens (tokenize line)))
