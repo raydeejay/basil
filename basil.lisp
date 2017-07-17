@@ -5,7 +5,6 @@
 ;;; "basil" goes here. Hacks and glory await!
 
 (defparameter *program* nil)
-(defparameter *variables* (make-hash-table :test 'equal))
 
 (defun compile* (tokens)
   (setf *program* (remove (car tokens) *program* :key 'car))
