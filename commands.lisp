@@ -182,3 +182,20 @@
                (setf *jump-to* jump-point)
                'jump)
         (pop *loop-stack*))))
+
+(defparameter *gosub-stack* nil)
+
+(defcommand 'gosub go-sub (n)
+  (let ((target (find-line n :jump-down t)))
+    (if target
+        (progn (push (1+ *current-line*) *gosub-stack*)
+               (setf *jump-to* target))
+        (error "GOSUB to inexistent line ~D" n))))
+
+(defcommand 'return return%% (&rest args)
+  (declare (ignore args))
+  (let ((jump-point (pop *gosub-stack*)))
+    (if jump-point
+        (progn (setf *jump-to* jump-point)
+               'jump)
+        (error "RETURN without gosub on line ~D" *current-line*))))
