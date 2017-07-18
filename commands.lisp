@@ -5,20 +5,43 @@
 (defparameter *commands* nil)
 
 (defcommand 'rem remark (&rest args)
+  "REM [<arg> ...]
+
+   Ignores its arguments."
   (declare (ignore args)))
 
-(defcommand 'stop stop (&rest args)
-  (declare (ignore args))
+(defcommand 'help help (fname)
+  "HELP <instr>
+
+   Displays help about a command."
+  (let ((target (find fname *commands*
+                      :test 'equal :key 'car)))
+    (format t "~A~2%" (if target
+                         (documentation (cdr target) 'function)
+                         "No help on that."))))
+
+(defcommand 'stop stop ()
+  "STOP
+
+   Unconditionally stops execution."
   (setf *stop* T)
   (format t "Stopping~%"))
 
 (defcommand 'goto go-to (n)
+  "GOTO <line number>
+
+   Unconditionally jumps to the specified line."
   (let ((target (find-line n :jump-down t)))
     (if target
         (setf *jump-to* target)
         (error "GOTO to inexistent line ~D" n))))
 
 (defcommand 'run run-program (&optional start)
+  "RUN [line number]
+
+   Clears variables, restores the data pointer, and begins execution
+   either at the specified line if any, or the beginning of the
+   program."
   (setf *stop* nil)
   (restore 0)
   (loop :for i := (if start
@@ -36,6 +59,9 @@
      :finally (format t "0 OK~%")))
 
 (defcommand 'list list-program ()
+  "LIST
+
+   Displays a listing of the program in memory."
   (loop :for line :in *program*
      :do (loop :for token :in line :do
             (cond ((equal token '|,|)
@@ -55,13 +81,23 @@
      :finally (format t "~%0 OK~%")))
 
 (defcommand 'clear clear ()
+  "CLEAR
+
+   Clears the variables."
   (setf *variables* (make-hash-table :test 'equal)))
 
 (defcommand 'new new ()
+  "NEW
+
+   Clears the variables and deletes the current program."
   (clear)
   (setf *program* nil))
 
 (defcommand 'let let= (&rest args)
+  "LET <var> = <expr>
+
+   Performs assignment. The infix expression EXPR is evaluated and the
+   result assigned to the variable VAR."
   (destructuring-bind (var equals-sign . math-exp) args
     (if (equal equals-sign '|=|)
         (setf (gethash var *variables*)
