@@ -62,7 +62,10 @@
 (defcommand 'let let= (&rest args)
   (destructuring-bind (var equals-sign . math-exp) args
     (if (equal equals-sign '|=|)
-        (setf (gethash var *variables*) (eval-math math-exp))
+        (setf (gethash var *variables*)
+              (if (= 1 (length math-exp))
+                  (car math-exp)
+                  (eval-math math-exp)))
         (error "Bad LET Syntax!~%"))))
 
 (defun one-print-arg (tokens)
