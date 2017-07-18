@@ -99,15 +99,15 @@
             ;; do nothing
             (setf last tok)
             (incf i))
+           ((gethash tok *variables*)
+            (format t "~A" (gethash tok *variables*))
+            (setf last tok)
+            (incf i))
            ((symbolp tok)
             (let ((expr (one-print-arg (subseq tokens i))))
               (format t "~A" (eval-math expr))
               (setf last tok)
               (setf i (+ i (length expr)))))
-           ((gethash tok *variables*)
-            (format t "~A" (gethash tok *variables*))
-            (setf last tok)
-            (incf i))
            (t (error "Unknown variable ~A" tok)))
      :finally
      (when (and last
