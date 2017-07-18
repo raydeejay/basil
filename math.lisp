@@ -11,7 +11,7 @@
   (gethash var *variables*))
 
 (defparameter *math-tokens*
-  '(|+| |-| |*| |/| |%| |(| |)| |<| |>|))
+  '(|+| |-| |*| |/| |%| |(| |)| |<| |>| |<=| |>=|))
 
 (defparameter *math-functions*
   '(sin asin cos acos tan atan sqrt length))
