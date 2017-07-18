@@ -20,6 +20,7 @@
 
 (defcommand 'run run-program (&optional start)
   (setf *stop* nil)
+  (restore 0)
   (loop :for i := (if start
                       (find-line start :jump-down t)
                       0)
@@ -199,3 +200,37 @@
         (progn (setf *jump-to* jump-point)
                'jump)
         (error "RETURN without gosub on line ~D" *current-line*))))
+
+(defparameter *data-line-index* 0)
+(defparameter *data-pointer* 2)
+
+(defun data-line-p (line)
+  (equal (cadr line) 'data))
+
+;; 10 data 1 , 2 , 3 , 4 , 5
+(defun read-next-data ()
+  "So my first implementation will be to keep a pointer to the last
+read data line, and scan the code forwards until a DATA command is
+found. Adding lines past that point will have that DATA count for the
+next READ, adding lines before the point will need a RESTORE to move
+the pointer back (and probably mess things anyway), so those lines can be read by further READ commands, which I hope is compatible enough with Sinclair BASIC. This needs wooork."
+  (loop :for line := (elt *program* *data-line-index*)
+     :if (or (not (data-line-p line))
+             (> *data-pointer* (1- (length line))))
+     :do (progn (incf *data-line-index*)
+                (setf *data-pointer* 2))
+     :else
+     :do (incf *data-pointer* 2)
+     (return (elt (elt *program* *data-line-index*)
+                  (- *data-pointer* 2)))))
+
+(defcommand 'data data (&rest args)
+  (declare (ignore args)))
+
+(defcommand 'read read%% (&rest args)
+  (loop :for var :in args :by #'cddr
+     :do (set-variable var (read-next-data))))
+
+(defcommand 'restore restore (&optional (n 0))
+  (setf *data-line-index* (find-line n :jump-down t)
+        *data-pointer* 2))
