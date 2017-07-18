@@ -4,6 +4,7 @@
 
 (defparameter *stop* nil)
 (defparameter *jump-to* nil)
+(defparameter *current-line* nil)
 
 (defun execute (tokens)
   (let ((subinstructions (split-sequence '|:| tokens

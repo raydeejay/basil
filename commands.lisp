@@ -30,7 +30,8 @@
                (1+ i))
      :while (and (< i (length *program*))
                  (not *stop*))
-     :do (execute (cdr (elt *program* i)))
+     :do (progn (setf *current-line* i)
+                (execute (cdr (elt *program* i))))
      :finally (format t "0 OK~%")))
 
 (defcommand 'list list-program ()
@@ -158,3 +159,26 @@
                 (execute then)
                 'jump))
           (error "Bad IF Syntax!~%")))))
+
+(defparameter *loop-stack* nil)
+
+(defcommand 'for for%% (&rest args)
+  ;; check syntax here? :D
+  (let* ((var (caar (split-sequence '= args)))
+         (start-expr (car (split-sequence 'TO (subseq args 2))))
+         (end-expr (subseq args (+ 1 2 (length start-expr)))))
+    (set-variable var (eval-math start-expr))
+    (push (list var
+                (eval-math end-expr)
+                (1+ *current-line*))
+          *loop-stack*)))
+
+(defcommand 'next next%% (&rest args)
+  (declare (ignore args))
+  (destructuring-bind (var limit jump-point)
+      (car *loop-stack*)
+    (if (< (get-variable var) limit)
+        (progn (set-variable var (1+ (get-variable var)))
+               (setf *jump-to* jump-point)
+               'jump)
+        (pop *loop-stack*))))
